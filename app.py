@@ -5,8 +5,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, List
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, Request, Form, status
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -455,13 +455,46 @@ Return only the final reply text.
 
 # ================== ROUTES ==================
 
+# @app.get("/", response_class=HTMLResponse)
+# async def index(request: Request):
+#     """
+#     Render main UI (AWARE check-in interface).
+#     """
+#     return templates.TemplateResponse("index.html", {"request": request})
+# Simple demo users (replace with real auth or backend)
+USERS = {
+    os.environ.get("AWARE_DEMO_USER", "nurse"): os.environ.get("AWARE_DEMO_PASS", "password")
+}
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    """
-    Render main UI (AWARE check-in interface).
-    """
-    return templates.TemplateResponse("index.html", {"request": request})
+    user = request.cookies.get("user_id")
+    if not user:
+        return RedirectResponse("/login")
+    return templates.TemplateResponse("index.html", {"request": request, "user_id": user})
 
+# Login / logout routes
+@app.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
+    expected = USERS.get(username)
+    if expected and expected == password:
+        resp = RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        resp.set_cookie(key="user_id", value=username, httponly=True)
+        return resp
+    return templates.TemplateResponse(
+        "login.html",
+        {"request": request, "error": "Invalid username or password."},
+        status_code=401
+    )
+
+@app.get("/logout")
+async def logout():
+    resp = RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+    resp.delete_cookie("user_id")
+    return resp
 
 @app.post("/api/checkin", response_model=CheckinResponse)
 async def checkin(payload: CheckinRequest):

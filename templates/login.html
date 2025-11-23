@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>AWARE — Login</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            width: 320px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+            border-radius: 8px;
+        }
+
+        .field {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .error {
+            color: #a33;
+            margin-bottom: 10px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        a.forgot {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h3>Sign in to AWARE</h3>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="post" action="/login">
+            <input class="field" type="text" name="username" placeholder="Username" required autofocus />
+            <input class="field" type="password" name="password" placeholder="Password" required />
+            <div class="actions">
+                <button type="submit">Login</button>
+                <a class="forgot" href="/forgot">Forgot password?</a>
+            </div>
+        </form>
+        <hr />
+        <div style="font-size:0.85em;color:#555">
+            Demo credentials: <strong>{{ request.app.extra.get("demo_user", "nurse") }}</strong> /
+            <strong>{{ request.app.extra.get("demo_pass", "password") }}</strong>
+            (use env AWARE_DEMO_USER / AWARE_DEMO_PASS to change)
+        </div>
+    </div>
+</body>
+
+</html>
