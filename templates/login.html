@@ -16,15 +16,16 @@
         }
 
         .card {
-            width: 320px;
+            width: 620px;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+            box-shadow: 0 2px 8px rgba(43, 86, 186, 0.8);
             border-radius: 8px;
         }
 
         .field {
             margin-bottom: 10px;
-            width: 100%;
+            width: 60%;
+            font-size: 1.2rem;
         }
 
         .error {
@@ -54,7 +55,7 @@
             <input class="field" type="text" name="username" placeholder="Username" required autofocus />
             <input class="field" type="password" name="password" placeholder="Password" required />
             <div class="actions">
-                <button type="submit">Login</button>
+                <button type="submit" class="primary-btn" style="width:auto;">Login</button>
                 <a class="forgot" href="/forgot">Forgot password?</a>
             </div>
         </form>

@@ -1,12 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>AWARE Prototype</title>
   <link rel="stylesheet" href="/static/style.css" />
 </head>
+
 <body>
+
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="brand"><a href="/" style="text-decoration:none;color:inherit;">AWARE</a></div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="/" class="active">Home</a>
+        <a href="/about">About</a>
+        <a href="/flow">Flow</a>
+      </nav>
+    </div>
+
+    <div class="right">
+      <div class="user">Signed in as <strong>{{ user_id }}</strong></div>
+      <div class="logout"><a href="/logout">Logout</a></div>
+    </div>
+  </div>
   <div class="app-container">
+
     <header class="app-header">
       <h1>AWARE</h1>
       <p>Adaptive Well-Being and Reflection Engine for Nurses</p>
@@ -30,12 +50,7 @@
             <label for="participant-id">
               Participant ID
             </label>
-            <input
-              type="text"
-              id="participant-id"
-              name="participant-id"
-              placeholder="e.g., P01, P02"
-            />
+            <input type="text" id="participant-id" name="participant-id" placeholder="e.g., P01, P02" />
             <small>
               Use a code (not your real name). This helps us keep your check-ins together.
             </small>
@@ -47,14 +62,7 @@
               How stressed do you feel right now?
               <span id="stress-value">3</span> / 5
             </label>
-            <input
-              type="range"
-              id="stress"
-              name="stress"
-              min="1"
-              max="5"
-              value="3"
-            />
+            <input type="range" id="stress" name="stress" min="1" max="5" value="3" />
           </div>
 
           <!-- Reflection depth -->
@@ -84,12 +92,8 @@
             <label for="text">
               What’s on your mind from your shift or day?
             </label>
-            <textarea
-              id="text"
-              name="text"
-              rows="3"
-              placeholder="You can write a sentence or two about what’s affecting you right now."
-            ></textarea>
+            <textarea id="text" name="text" rows="3"
+              placeholder="You can write a sentence or two about what’s affecting you right now."></textarea>
           </div>
 
           <!-- Submit -->
@@ -395,4 +399,5 @@
     });
   </script>
 </body>
+
 </html>

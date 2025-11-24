@@ -475,7 +475,28 @@ async def index(request: Request):
 # Login / logout routes
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
+    user = request.cookies.get("user_id")
+    if user:
+        return RedirectResponse("/")  
     return templates.TemplateResponse("login.html", {"request": request})
+
+# about page
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request):
+    user = request.cookies.get("user_id")
+    return templates.TemplateResponse("about.html", {"request": request, "user_id": user})
+
+# flow page
+@app.get("/flow", response_class=HTMLResponse)
+async def flow(request: Request):
+    user = request.cookies.get("user_id")
+    return templates.TemplateResponse("workflow.html", {"request": request, "user_id": user})
+
+
+@app.get("/base", response_class=HTMLResponse)
+async def flow(request: Request):
+    user = request.cookies.get("user_id")
+    return templates.TemplateResponse("base.html", {"request": request, "user_id": user})
 
 @app.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):

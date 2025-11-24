@@ -224,6 +224,7 @@ body {
   font-size: 0.8rem;
   color: #666;
 }
+
 .pattern-section {
   margin-top: 4px;
 }
@@ -241,4 +242,84 @@ body {
 
 .pattern-text {
   white-space: pre-wrap;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* keeps it above content */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #0b3d91;
+  /* dark blue. use #000 for black */
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 12px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+/* active link: reverse colors */
+.nav a.active {
+  background: #fff;
+  color: #0b3d91;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav a.active:hover {
+  background: #e6e6e6;
+  /* or whatever you want */
+  color: #0b3d91;
+  /* keep text color if needed */
+}
+
+.right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.logout a {
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.logout a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+a:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.12);
+  outline-offset: 2px;
 }

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>About AWARE – Adaptive Well-Being & Reflection Engine</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #ffffff;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #38bdf8;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        header p {
+            margin-top: 12px;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 900px;
+            padding: 30px 20px;
+            margin: auto;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            font-size: 28px;
+            color: #0f172a;
+            text-align: left;
+        }
+
+        p {
+            margin: 16px 0;
+            font-size: 17px;
+            color: #374151;
+        }
+
+        .highlight-box {
+            background: #f0f9ff;
+            border-left: 4px solid #38bdf8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .story-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 18px 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            padding: 8px 0;
+            font-size: 16px;
+        }
+
+        .step-number {
+            background: #38bdf8;
+            color: white;
+            padding: 3px 9px;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        /* ---------------- TEAM SECTION ---------------- */
+
+        .team-title {
+            text-align: center;
+            font-size: 32px;
+            margin-top: 60px;
+            color: #0f172a;
+        }
+
+        .team-container-grid {
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px 20px;
+
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .dev-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease;
+        }
+
+        .dev-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .photo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: auto;
+            margin-bottom: 15px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #38bdf8;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .role {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        .linkedin-btn {
+            background: #38bdf8;
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.2s ease;
+            display: inline-block;
+        }
+
+        .linkedin-btn:hover {
+            background: #0ea5e9;
+        }
+
+        /* Mobile friendliness */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            .photo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .dev-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:16px;">
+            <div class="brand"><a href="/" style="text-decoration:none;color:inherit;">AWARE</a></div>
+
+            <nav class="nav" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/about" class="active">About</a>
+                <a href="/flow">Flow</a>
+            </nav>
+        </div>
+
+        <div class="right">
+            <div class="user">Signed in as <strong>{{ user_id }}</strong></div>
+            <div class="logout"><a href="/logout">Logout</a></div>
+        </div>
+    </div>
+    <header>
+        <h1>AWARE</h1>
+        <p>Adaptive Well-Being & Reflection Engine for Healthcare Workers</p>
+    </header>
+
+    <div class="container">
+
+        <!-- WHAT IS AWARE -->
+        <section>
+            <h2>What is AWARE?</h2>
+            <p>
+                AWARE is an Intelligent User Interface (IUI) designed to help healthcare workers pause and reflect
+                during demanding workdays.
+                It offers short, adaptive check-ins grounded in well-being science using concepts from the Maslach
+                Burnout Inventory (MBI)
+                and the Professional Fulfillment Index (PFI).
+            </p>
+
+            <div class="highlight-box">
+                <p>AWARE helps users notice emotional patterns, breathe, and ground themselves without judgment.</p>
+            </div>
+        </section>
+
+        <!-- STORY -->
+        <section>
+            <h2>The Story of AWARE</h2>
+            <p>
+                Imagine a nurse moving quickly between tasks, patient care, and documentation.
+                They have little time to reflect on how they feel. AWARE is designed for short, restorative moments
+                where users can check in with themselves.
+            </p>
+
+            <div class="story-card">
+                <p><span class="step-number">1</span><strong>Starting the Day</strong><br>A gentle login welcomes the
+                    user.</p>
+
+                <p><span class="step-number">2</span><strong>Warm Welcome</strong><br>Science-backed messages and
+                    calming imagery help center the user.</p>
+
+                <p><span class="step-number">3</span><strong>Personalization</strong><br>The “Know Yourself”
+                    micro-assessment refines coping-style modeling.</p>
+
+                <p><span class="step-number">4</span><strong>Daily Check-In</strong><br>Users share stress levels and
+                    choose their reflection depth.</p>
+
+                <p><span class="step-number">5</span><strong>Adaptive Support</strong><br>AWARE adapts tone and guidance
+                    based on the user model and relational memory.</p>
+
+                <p><span class="step-number">6</span><strong>Mixed-Initiative Dialogue</strong><br>AWARE offers deeper
+                    prompts while letting the user stay in control.</p>
+
+                <p><span class="step-number">7</span><strong>Pattern Insights</strong><br>Users can view stress trends
+                    and coping signals.</p>
+
+                <p><span class="step-number">8</span><strong>Closing the Moment</strong><br>AWARE ends each check-in
+                    with supportive gratitude.</p>
+            </div>
+        </section>
+
+        <!-- PRINCIPLES -->
+        <section>
+            <h2>Core Principles Behind AWARE</h2>
+            <ul>
+                <li><strong>User Modeling:</strong> Infers coping style and tone preference.</li>
+                <li><strong>Relational Memory:</strong> References past meaningful entries.</li>
+                <li><strong>Adaptivity:</strong> Tone, content, and depth adjust dynamically.</li>
+                <li><strong>Mixed Initiative:</strong> Provides support while allowing user control.</li>
+                <li><strong>Scientific Foundation:</strong> Grounded in validated MBI and PFI concepts.</li>
+            </ul>
+        </section>
+
+        <!-- SCIENCE -->
+        <section>
+            <h2>Scientific Foundations</h2>
+            <ul>
+                <li>
+                    <strong>Maslach Burnout Inventory (MBI)</strong><br>
+                    Maslach, C., Jackson, S. E., & Leiter, M. P. (1996).
+                    <em>Maslach Burnout Inventory Manual</em>.
+                    <br>
+                    Official reference:
+                    <a href="https://onlinelibrary.wiley.com/doi/10.1002/job.4030020205" target="_blank">
+                        https://onlinelibrary.wiley.com/doi/10.1002/job.4030020205
+                    </a>
+                </li>
+
+                <li style="margin-top:20px;">
+                    <strong>Professional Fulfillment Index (PFI)</strong><br>
+                    Trockel, M. T., et al. (2018).
+                    <em>A brief instrument to assess burnout and fulfillment.</em>
+                    <br>
+                    Official reference:
+                    <a href="https://www.mcgill.ca/deptmedicine/wellness/professional-fulfillment-index-self-assessment-tool"
+                        target="_blank">
+                        Professional Fulfillment Index Self Assessment Tool
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <!-- TEAM SECTION -->
+    <h2 class="team-title">Meet the Developers</h2>
+
+    <div class="team-container-grid">
+
+        <!-- Alphabetical order -->
+        <div class="dev-card">
+            <div class="photo" style="background-image:url('your_photo_aaron.jpg');"></div>
+            <div class="name">Aaron</div>
+            <div class="role">Data & Pattern Analysis</div>
+            <a class="linkedin-btn" href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+        </div>
+
+        <div class="dev-card">
+            <div class="photo" style="background-image:url('your_photo_mehrzad.jpg');"></div>
+            <div class="name">Mehrzad</div>
+            <div class="role">Frontend & UI/UX Design</div>
+            <a class="linkedin-btn" href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+        </div>
+
+        <div class="dev-card">
+            <div class="photo" style="background-image:url('your_photo_sammie.jpg');"></div>
+            <div class="name">Sammie</div>
+            <div class="role">Lead Research & Adaptive Design</div>
+            <a class="linkedin-btn" href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+        </div>
+
+        <div class="dev-card">
+            <div class="photo" style="background-image:url('your_photo_soma.jpg');"></div>
+            <div class="name">Soma</div>
+            <div class="role">Backend & Adaptive Engine Development</div>
+            <a class="linkedin-btn" href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
