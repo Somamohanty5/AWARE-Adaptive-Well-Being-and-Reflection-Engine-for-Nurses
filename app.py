@@ -409,6 +409,40 @@ def summarize_history_for_llm(rows: List[dict], max_items: int = 5) -> str:
     return "\n".join(parts)
 
 
+def simple_fallback_reply(user_text: str, stress: int) -> str:
+    """Lightweight, neutral fallback used only when Gemini is unavailable or errors.
+
+    Intentionally avoids the heavier rule-based template so positive or mixed
+    messages don't get overwritten by a "demanding day" style reply.
+    """
+
+    if stress <= 3:
+        return (
+            "Thanks for checking in. From what you've shared, it sounds like things may be at least "
+            "somewhat manageable right now, even if there are still ups and downs. If you'd like, you "
+            "can add a bit more about what feels most important today, and you can use this space just "
+            "to pause and notice how you're doing."
+        )
+
+    # For higher stress, keep a gentle, validating tone without going deep.
+    return (
+        "Thanks for taking a moment to check in. It sounds like there is a fair amount on your plate "
+        "right now. You don't have to solve everything in this moment — even briefly noticing how "
+        "you're feeling can be a small step toward deciding what support you might need next."
+    )
+
+
+def maybe_suppress_history_for_prompt(user_text: str, stress: int, history_summary: str) -> str:
+    lower = user_text.strip().lower()
+    words = lower.split()
+    positive_tokens = {"good", "nice", "well", "okay", "ok", "fine", "grateful", "thankful"}
+
+    if stress <= 3 and len(words) <= 8 and any(w in positive_tokens for w in words):
+        return "Recent check-ins are omitted here so you can focus on how things are going today."
+
+    return history_summary
+
+
 # ================== LLM REFINEMENT (GEMINI) ==================
 
 def maybe_gemini_refine_reply(user_text: str,
@@ -589,16 +623,20 @@ def llm_generate_reply_for_checkin(
     - Never give diagnoses or clinical advice.
     """
 
-    # Fallback if LLM is not available: use old rule-based behavior
+    # Fallback if LLM is not available: use a lightweight neutral reply
     if gemini_model is None:
-        draft_reply, _ = generate_feedback(
-            stress=stress,
-            mode=mode,
-            coping_mode=coping_mode,
-            text=user_text,
-            last_entry=last_entry,
+        return simple_fallback_reply(user_text, stress)
+
+    # Deterministic handling for very short greetings only; all other cases go to Gemini.
+    lower_text = user_text.strip().lower()
+    words = lower_text.split()
+    greeting_words = {"hi", "hey", "hello"}
+
+    if len(words) <= 2 and lower_text in greeting_words:
+        return (
+            "Hi, and thanks for checking in. When you’re ready, you can share a sentence or two "
+            "about how your shift or day is going, and I’ll offer a brief reflection."
         )
-        return draft_reply
 
     # Build brief conversation context for continuity
     if last_entry is not None:
@@ -632,52 +670,75 @@ Recent check-ins (summary, newest last):
 
 Your task:
 
-1. If the user's message is extremely short or vague, such as:
-   - just a couple of letters ("ff", "aa"),
-   - brief fillers like "ok", "fine", "idk", "meh",
-   - "nothing", "n/a", "good", "bad" with no detail,
-   then do NOT try to interpret it deeply.
-   Instead, write a short, gentle clarification asking them to share
-   a bit more detail about what happened or how they are feeling.
+1. First, use the message together with the stress rating to infer the overall tone and
+   burnout-related signals in plain language. Internally, you may think in terms similar to
+   the Maslach burnout components (emotional exhaustion, depersonalization or feeling
+   disconnected from patients, and reduced sense of accomplishment), but you must NOT name
+   these components explicitly to the user and you must NOT diagnose anything.
 
-2. Otherwise, respond with an empathetic reflection that:
-   - Acknowledges their situation and feelings in plain language.
-   - Matches the general depth:
-       * Quick: 2–3 concise sentences.
-       * Normal: 3–4 sentences.
-       * Deep: 4–5 sentences, maybe with 1–2 gentle questions.
-   - Avoids clinical or diagnostic language.
-   - Does not promise outcomes, only invites reflection and small steps.
+2. Decide which of these broad categories the current check-in fits best:
+   - Clearly or mostly positive / stable (for example, the user describes things as going
+     fine, manageable, or even good, and stress is low or moderate).
+   - Mixed or mildly strained (some stress or frustration, but also some positives or
+     coping, and the user does not sound overwhelmed).
+   - High strain / possible burnout signals (for example, strong fatigue, cynicism,
+     feeling emotionally drained, or feeling ineffective, especially when stress is high).
 
-3. You may gently connect to patterns from recent check-ins if it feels natural,
-   but do not overload the answer with history.
+   Additional rule for detecting MIXED tone:
+   - Treat the message as MIXED if it contains both:
+       1) at least one fatigue or strain indicator (for example: tired, exhausting,
+          demanding, stressful, overwhelming), AND
+       2) at least one coping or stability indicator (for example: "I’m coping",
+          "I’m managing", "I’m alright", "I’m okay", "I’m holding up").
+   - If both appear in the same message, classify it as MIXED even if the numeric stress
+     rating alone might look low or high.
 
-Return ONLY the reply text, no labels or extra formatting.
+3. Respond accordingly:
+   - If the message is clearly or mostly positive *right now* (for example "life is nice",
+     "today has been pretty good", or "work is busy but mostly okay"):
+       * Treat this check-in as positive even if some past entries sounded stressed.
+       * Briefly acknowledge and reinforce what seems to be going okay.
+       * Keep the reply light and concise (about 2–3 sentences).
+       * Do NOT describe the day as heavy, demanding, or very stressful unless the
+         user clearly said so in this message.
+       * Do NOT introduce problems or worries that the user did not mention.
+       * You may gently invite further reflection only as an option, not a requirement.
+   - If the message has a mixed emotional tone (for example, the user mentions
+     fatigue, pressure, or emotional strain *together with* statements like
+     "I’m coping", "I’m managing", "I’m alright", or "it’s not too bad"):
+       * Write 2–3 sentences.
+       * Acknowledge that something feels tiring or heavy.
+       * Affirm that the user is still managing and maintaining some control.
+       * Keep the tone steady and supportive without escalating the stress.
+       * Avoid offering deep-dive reflection unless the user clearly asks for it.
+       * In effect, reflect back the tiring part, reinforce the coping part, and gently
+         highlight that it’s okay to hold both at once.
+   - If the message suggests high strain or burnout-like feelings:
+       * Validate that things sound demanding or draining.
+       * Use a calm, compassionate tone without clinical labels.
+       * Offer 3–5 sentences, including at most 1–2 gentle questions that invite the
+         user to notice what is most draining and what small support or boundary might
+         help a little.
+
+4. Throughout, avoid clinical or diagnostic language, do not promise outcomes, and do not
+   give crisis instructions. Stay focused on reflection, noticing patterns, and small,
+   realistic steps.
+
+5. You may gently connect to patterns from recent check-ins if it feels natural, but do
+   not overload the answer with history.
+
+Return ONLY the reply text, with no labels, headings, or extra formatting.
 """
         resp = gemini_model.generate_content(prompt)
         reply = (resp.text or "").strip()
         if not reply:
-            # If Gemini returns nothing, fall back to rule-based
-            draft_reply, _ = generate_feedback(
-                stress=stress,
-                mode=mode,
-                coping_mode=coping_mode,
-                text=user_text,
-                last_entry=last_entry,
-            )
-            return draft_reply
+            # If Gemini returns nothing, fall back to simple neutral reply
+            return simple_fallback_reply(user_text, stress)
         return reply
     except Exception as e:
         print("Gemini error in llm_generate_reply_for_checkin:", e)
-        # Fallback to rule-based if LLM fails
-        draft_reply, _ = generate_feedback(
-            stress=stress,
-            mode=mode,
-            coping_mode=coping_mode,
-            text=user_text,
-            last_entry=last_entry,
-        )
-        return draft_reply
+        # Fallback to simple neutral reply if LLM fails
+        return simple_fallback_reply(user_text, stress)
 # ================== HISTORY & PATTERN HELPERS ==================
 
 def load_user_rows_from_csv(user_id: str) -> list:
@@ -738,6 +799,7 @@ async def checkin(payload: CheckinRequest):
     # Load CSV/JSON rows so LLM can see brief history context
     csv_rows = load_user_rows_from_csv(user_id)
     history_summary = summarize_history_for_llm(csv_rows)
+    history_summary = maybe_suppress_history_for_prompt(text, stress, history_summary)
 
     # User modeling: coping mode (still rule-based for tagging)
     coping_mode = classify_coping_mode(text)
@@ -819,6 +881,10 @@ async def pattern_summary(user_id: str):
 
     try:
         history_text = summarize_history_for_llm(rows, max_items=8)
+        latest = rows[-1]
+        latest_stress = latest.get("stress", "?")
+        latest_text = latest.get("text", "")
+
         prompt = f"""
 You are AWARE, a simple reflection tool for nurses. You are NOT a clinician and must NOT give diagnoses,
 medical advice, or crisis instructions. You only summarize patterns in stress and reflections in a gentle,
@@ -828,9 +894,19 @@ Here are recent check-ins from one nurse (each has timestamp, stress 1–5, mode
 
 {history_text}
 
+Most recent check-in (latest):
+- Stress: {latest_stress}
+- Text: "{latest_text}"
+
 Your task:
-- Write a short summary (3–5 sentences) about patterns you see:
-  - How stress has been trending (e.g., often high, mixed, etc.).
+- First, pay close attention to the *current* mood in the most recent check-ins, especially the latest one.
+  - If the most recent check-ins sound clearly or mostly positive or stable, the overall summary should
+    explicitly acknowledge that things seem to be going at least somewhat okay *now*, even if older
+    entries were more strained.
+  - If the most recent check-ins sound more strained or exhausted, the summary should reflect that current
+    strain while still noticing any strengths or coping efforts.
+- Then write a short summary (3–5 sentences) about patterns you see over time:
+  - How stress has been trending (e.g., often high, mixed, improving, etc.).
   - Any repeating situations or emotions (if visible).
   - Any small strengths or coping efforts you notice.
 - Use simple, encouraging language.
