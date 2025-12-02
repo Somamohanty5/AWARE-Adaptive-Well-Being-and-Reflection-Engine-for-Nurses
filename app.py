@@ -618,8 +618,10 @@ def llm_generate_reply_for_checkin(
 
     It should:
     - Give empathetic, concise reflection replies.
-    - If the message is extremely short / vague (e.g., "ff", "ok", "idk"),
-      respond with a gentle clarification asking the user to share more detail.
+    - Make Quick / Normal / Deep clearly different in length and number of questions:
+        * Quick: 2–3 short sentences, no questions unless the message is extremely short/vague.
+        * Normal: 3–4 sentences, at most 1 gentle question.
+        * Deep: 4–5 sentences, 1–2 reflective questions.
     - Never give diagnoses or clinical advice.
     """
 
@@ -720,15 +722,32 @@ Your task:
          user to notice what is most draining and what small support or boundary might
          help a little.
 
-4. Throughout, avoid clinical or diagnostic language, do not promise outcomes, and do not
+4. Explicitly handle direct requests for help, advice, or suggestions. If the user asks
+   things like "What should I do?", "Any advice?", "Any suggestions?", "How can I handle
+   this?", or similar:
+   - Still follow the appropriate category above (positive, mixed, or high strain).
+   - In addition, include 2–3 small, concrete, non-clinical options they *might* consider.
+     Examples of options you can use:
+       * taking a short pause or breathing break,
+       * jotting down one thing that went okay in the shift,
+       * briefly checking in with a trusted colleague,
+       * setting one small boundary for the rest of the day,
+       * planning one simple recovery activity after work (like a walk, music, or quiet time).
+   - Phrase these clearly as gentle possibilities (e.g., "You could consider…", "One option
+     might be…") rather than strong instructions.
+   - Do NOT suggest medication, diagnosis, treatment, or anything that sounds like clinical care.
+
+5. Throughout, avoid clinical or diagnostic language, do not promise outcomes, and do not
    give crisis instructions. Stay focused on reflection, noticing patterns, and small,
    realistic steps.
 
-5. You may gently connect to patterns from recent check-ins if it feels natural, but do
+6. You may gently connect to patterns from recent check-ins if it feels natural, but do
    not overload the answer with history.
 
 Return ONLY the reply text, with no labels, headings, or extra formatting.
 """
+
+
         resp = gemini_model.generate_content(prompt)
         reply = (resp.text or "").strip()
         if not reply:
@@ -739,6 +758,7 @@ Return ONLY the reply text, with no labels, headings, or extra formatting.
         print("Gemini error in llm_generate_reply_for_checkin:", e)
         # Fallback to simple neutral reply if LLM fails
         return simple_fallback_reply(user_text, stress)
+
 # ================== HISTORY & PATTERN HELPERS ==================
 
 def load_user_rows_from_csv(user_id: str) -> list:
