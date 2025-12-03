@@ -409,6 +409,7 @@ def summarize_history_for_llm(rows: List[dict], max_items: int = 5) -> str:
     return "\n".join(parts)
 
 
+
 def simple_fallback_reply(user_text: str, stress: int) -> str:
     """Lightweight, neutral fallback used only when Gemini is unavailable or errors.
 
@@ -480,6 +481,26 @@ def maybe_suppress_history_for_prompt(user_text: str, stress: int, history_summa
 
     return history_summary
 
+def is_advice_seeking(user_text: str) -> bool:
+    advice_seeking_phrases = [
+        "how to feel better",
+        "how can i feel better",
+        "how do i feel better",
+        "any suggestions",
+        "any advice",
+        "how can i fix this",
+        "what should i do",
+        "what can i do",
+        "how can i handle this",
+        "suggest some ideas",
+        "suggest some idea",
+        "help me feel better",
+        "ways to feel better",
+        "ideas to feel good",
+        "how to handle this",
+    ]
+    lower_text = user_text.strip().lower()
+    return any(p in lower_text for p in advice_seeking_phrases)
 
 # ================== LLM REFINEMENT (GEMINI) ==================
 
@@ -497,6 +518,12 @@ def maybe_gemini_refine_reply(user_text: str,
     - Otherwise, if Gemini is available, refine the draft reply.
     - If Gemini is unavailable or fails, fall back to the draft reply.
     """
+    if is_advice_seeking(user_text) :
+        answer_mode= "focus on providing 1-2 small, concrete , non-clinical suggestions, not just reflection"  
+        max_sentences= "1-2"
+    else:
+        answer_mode= "focus on reflection and support without giving advice"
+        max_sentences= "3-5"
 
     # 1) Short / vague messages → deterministic clarification, no LLM
     short_or_vague = len(user_text.split()) < 3 or user_text.lower().strip() in {
@@ -559,8 +586,8 @@ Your task:
 - Explicitly acknowledge any clarification the user just gave (for example, if they say stress is “due to the work”, reflect that back).
 - Stay supportive, concise, and non-judgmental.
 - Do NOT add clinical or diagnostic language.
-- Avoid promising outcomes; focus on reflection.
-- Aim for about 3–5 sentences maximum.
+- Avoid promising outcomes; {answer_mode}.
+- Aim for about {max_sentences} sentences maximum.
 - If the draft already looks fine, you may keep it with light edits.
 - Do NOT mention that you are rewriting a draft.
 
@@ -691,7 +718,12 @@ def llm_generate_reply_for_checkin(
         )
     else:
         conversation_context = ""
-
+    if is_advice_seeking(lower_text) :
+        answer_mode= "focus on providing 1-2 small, concrete , non-clinical suggestions, not just reflection"  
+        max_sentences= "1-2"
+    else:
+        answer_mode= "focus on reflection and support without giving advice"
+        max_sentences= "3-5"
     try:
         prompt = f"""
 You are AWARE, a lightweight well-being reflection tool for nurses.
