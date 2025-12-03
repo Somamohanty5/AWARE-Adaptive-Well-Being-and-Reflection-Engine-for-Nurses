@@ -22,7 +22,7 @@
 
     <div class="right">
       <button id="theme-toggle-btn" class="secondary-btn" type="button">
-      <span id="theme-toggle-icon">🌞</span>
+        <span id="theme-toggle-icon">🌞</span>
       </button>
       <div class="user">Signed in as <strong>{{ user_id }}</strong></div>
       <div class="logout"><a href="/logout">Logout</a></div>
@@ -53,7 +53,8 @@
             <label for="participant-id">
               Participant ID
             </label>
-            <input type="text" id="participant-id" name="participant-id" placeholder="e.g., P01, P02" />
+            <input type="text" id="participant-id" name="participant-id" placeholder="e.g., P01, P02"
+              autocomplete="off" />
             <small>
               Use a code (not your real name). This helps us keep your check-ins together.
             </small>
@@ -154,29 +155,29 @@
     const patternBtn = document.getElementById("pattern-btn");
     const patternContainer = document.getElementById("pattern-container");
     async function handleErrorResponse(response, errorMsgElement) {
-  const err = await response.json().catch(() => ({}));
-  let msg = "Something went wrong. Please try again.";
+      const err = await response.json().catch(() => ({}));
+      let msg = "Something went wrong. Please try again.";
 
-  if (response.status === 422) {
-    if (Array.isArray(err.errors) && err.errors.length) {
-      msg = err.errors.join(" ");
-    } else if (typeof err.detail === "string") {
-      msg = err.detail;
+      if (response.status === 422) {
+        if (Array.isArray(err.errors) && err.errors.length) {
+          msg = err.errors.join(" ");
+        } else if (typeof err.detail === "string") {
+          msg = err.detail;
+        }
+      } else if (typeof err.detail === "string") {
+        msg = err.detail;
+      }
+
+      errorMsgElement.textContent = msg;
+      errorMsgElement.style.display = "block";
     }
-  } else if (typeof err.detail === "string") {
-    msg = err.detail;
-  }
-
-  errorMsgElement.textContent = msg;
-  errorMsgElement.style.display = "block";
-}
 
 
     // ===== Theme toggle (light / dark) =====
     const themeToggleBtn = document.getElementById("theme-toggle-btn");
     const themeToggleIcon = document.getElementById("theme-toggle-icon");
     const THEME_KEY = "aware_theme";
-    
+
     function applyTheme(theme) {
       if (theme === "dark") {
         document.body.classList.add("dark-theme");
@@ -205,7 +206,7 @@
     let lastCheckinContext = null;
 
     // Pre-fill Participant ID from localStorage if available
-    participantInput.value = getStoredUserId();
+    //participantInput.value = getStoredUserId();
     // Track which participant the chat currently represents
     let currentParticipantId = participantInput.value.trim() || "";
 
@@ -220,7 +221,7 @@
         `;
       errorMsg.style.display = "none";
       lastCheckinContext = null;
-      }
+    }
     participantInput.addEventListener("change", () => {
       const newId = participantInput.value.trim();
       // If nothing actually changed, do nothing

@@ -587,8 +587,10 @@ async def login_post(request: Request, username: str = Form(...), password: str 
 @app.get("/logout")
 async def logout():
     resp = RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
-    resp.delete_cookie("user_id")
-    resp.delete_cookie("session_id")
+    resp.delete_cookie("user_id", path="/")
+    resp.delete_cookie("session_id", path="/")
+    resp.set_cookie(key="user_id", value="", max_age=0, expires=0, path="/", httponly=True)
+    resp.set_cookie(key="session_id", value="", max_age=0, expires=0, path="/", httponly=True)
     return resp
 
 
