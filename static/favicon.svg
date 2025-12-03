@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="31" fill="#0b3d91" stroke="#fff" stroke-width="1"/>
+  
+  <!-- Heart (well-being) -->
+  <path d="M32 48 C20 38, 12 32, 12 24 C12 18, 16 14, 20 14 C24 14, 28 18, 32 22 C36 18, 40 14, 44 14 C48 14, 52 18, 52 24 C52 32, 44 38, 32 48 Z" 
+        fill="#fff" stroke="none"/>
+  
+  <!-- Reflection ripple (optional accent) -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#fff" stroke-width="1" opacity="0.3"/>
+</svg>

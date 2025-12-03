@@ -5,191 +5,192 @@
     <meta charset="UTF-8" />
     <title>About AWARE – Adaptive Well-Being & Reflection Engine</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         body {
-        margin: 0;
-        padding: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: var(--bg-color);
-        color: var(--text-color);
-        line-height: 1.6;
-    }
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
 
-    header {
-        background: #38bdf8;
-        color: white;
-        padding: 40px 20px;
-        text-align: center;
-    }
+        header {
+            background: #38bdf8;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
 
-    /* Dark mode tweak for header so it’s not blinding */
-    body.dark-theme header {
-        background: #0b3d91;
-    }
+        /* Dark mode tweak for header so it’s not blinding */
+        body.dark-theme header {
+            background: #0b3d91;
+        }
 
-    header h1 {
-        margin: 0;
-        font-size: 32px;
-    }
-
-    header p {
-        margin-top: 12px;
-        font-size: 16px;
-        opacity: 0.95;
-    }
-
-    .container {
-        max-width: 900px;
-        padding: 30px 20px;
-        margin: auto;
-    }
-
-    section {
-        margin-bottom: 60px;
-    }
-
-    h2 {
-        margin-top: 40px;
-        font-size: 28px;
-        color: var(--text-color);
-        text-align: left;
-    }
-
-    p {
-        margin: 16px 0;
-        font-size: 17px;
-        color: var(--text-color);
-    }
-
-    .highlight-box {
-        background: var(--card-bg);
-        border-left: 4px solid #38bdf8;
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 6px;
-    }
-
-    .story-card {
-        background: var(--card-bg);
-        padding: 20px;
-        border-radius: 10px;
-        margin: 18px 0;
-        border: 1px solid var(--border-subtle);
-    }
-
-    ul {
-        list-style: none;
-        padding-left: 0;
-    }
-
-    ul li {
-        padding: 8px 0;
-        font-size: 16px;
-        color: var(--text-color);
-    }
-
-    .step-number {
-        background: #38bdf8;
-        color: white;
-        padding: 3px 9px;
-        border-radius: 50%;
-        font-size: 14px;
-        margin-right: 10px;
-    }
-
-    /* ---------------- TEAM SECTION ---------------- */
-
-    .team-title {
-        text-align: center;
-        font-size: 32px;
-        margin-top: 60px;
-        color: var(--text-color);
-    }
-
-    .team-container-grid {
-        max-width: 1000px;
-        margin: auto;
-        padding: 30px 20px;
-
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 24px;
-    }
-
-    .dev-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-subtle);
-        border-radius: 14px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
-        transition: transform 0.2s ease;
-    }
-
-    .dev-card:hover {
-        transform: translateY(-4px);
-    }
-
-    .photo {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        margin: auto;
-        margin-bottom: 15px;
-        background-size: cover;
-        background-position: center;
-        border: 2px solid #38bdf8;
-    }
-
-    .name {
-        font-size: 20px;
-        font-weight: 600;
-        color: var(--text-color);
-    }
-
-    .role {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 14px;
-    }
-
-    .linkedin-btn {
-        background: #38bdf8;
-        color: white;
-        text-decoration: none;
-        padding: 8px 14px;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: background 0.2s ease;
-        display: inline-block;
-    }
-
-    .linkedin-btn:hover {
-        background: #0ea5e9;
-    }
-
-    /* Mobile friendliness */
-    @media (max-width: 600px) {
         header h1 {
-            font-size: 26px;
+            margin: 0;
+            font-size: 32px;
+        }
+
+        header p {
+            margin-top: 12px;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 900px;
+            padding: 30px 20px;
+            margin: auto;
+        }
+
+        section {
+            margin-bottom: 60px;
         }
 
         h2 {
-            font-size: 22px;
+            margin-top: 40px;
+            font-size: 28px;
+            color: var(--text-color);
+            text-align: left;
         }
 
-        .photo {
-            width: 70px;
-            height: 70px;
+        p {
+            margin: 16px 0;
+            font-size: 17px;
+            color: var(--text-color);
+        }
+
+        .highlight-box {
+            background: var(--card-bg);
+            border-left: 4px solid #38bdf8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .story-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 18px 0;
+            border: 1px solid var(--border-subtle);
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            padding: 8px 0;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .step-number {
+            background: #38bdf8;
+            color: white;
+            padding: 3px 9px;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        /* ---------------- TEAM SECTION ---------------- */
+
+        .team-title {
+            text-align: center;
+            font-size: 32px;
+            margin-top: 60px;
+            color: var(--text-color);
+        }
+
+        .team-container-grid {
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px 20px;
+
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
         }
 
         .dev-card {
-            padding: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease;
         }
-    }
-</style>
+
+        .dev-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .photo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: auto;
+            margin-bottom: 15px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #38bdf8;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .role {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        .linkedin-btn {
+            background: #38bdf8;
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.2s ease;
+            display: inline-block;
+        }
+
+        .linkedin-btn:hover {
+            background: #0ea5e9;
+        }
+
+        /* Mobile friendliness */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            .photo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .dev-card {
+                padding: 16px;
+            }
+        }
+    </style>
 
 </head>
 
@@ -207,7 +208,7 @@
 
         <div class="right">
             <button id="theme-toggle-btn" class="secondary-btn" type="button">
-            <span id="theme-toggle-icon">🌞</span>
+                <span id="theme-toggle-icon">🌞</span>
             </button>
             <div class="user">Signed in as <strong>{{ user_id }}</strong></div>
             <div class="logout"><a href="/logout">Logout</a></div>

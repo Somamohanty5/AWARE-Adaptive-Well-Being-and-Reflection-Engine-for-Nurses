@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>AWARE Prototype</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 
@@ -59,7 +60,8 @@
               Use a code (not your real name). This helps us keep your check-ins together.
             </small>
           </div>
-
+          <!-- Stress indicator bar -->
+          <div id="stress-indicator" class="stress-indicator stress-level-3"></div>
           <!-- Stress slider -->
           <div class="field-group">
             <label for="stress">
@@ -133,8 +135,24 @@
       </section>
     </main>
   </div>
-
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Waiting for response...</p>
+    </div>
+  </div>
   <script>
+    const loadingOverlay = document.getElementById("loading-overlay");
+    const loadingMessage = document.querySelector(".loading-spinner p");
+
+    function showLoadingOverlay(message = "Waiting for response...") {
+      loadingMessage.textContent = message;
+      loadingOverlay.style.display = "flex";
+    }
+    function hideLoadingOverlay() {
+      loadingOverlay.style.display = "none";
+    }
     // ===== Local storage helpers for Participant ID =====
     function getStoredUserId() {
       return localStorage.getItem("aware_user_id") || "";
@@ -243,6 +261,8 @@
     // Update stress value label when slider moves
     stressInput.addEventListener("input", () => {
       stressValueEl.textContent = stressInput.value;
+      const stressIndicator = document.getElementById("stress-indicator");
+      stressIndicator.className = `stress-indicator stress-level-${stressInput.value}`;
     });
 
     function appendUserMessage(text, stress, mode, participantId) {
@@ -435,7 +455,7 @@
       // Show user message immediately
       appendUserMessage(text, stress, mode, participantId);
       document.getElementById("text").value = "";
-
+      showLoadingOverlay("AWARE is preparing a reflection...");
       try {
         const response = await fetch("/api/checkin", {
           method: "POST",
@@ -464,17 +484,29 @@
         console.error(err);
         errorMsg.textContent = "Network error. Please check that the server is running.";
         errorMsg.style.display = "block";
+      } finally {
+        hideLoadingOverlay();
       }
     });
 
-    historyBtn.addEventListener("click", () => {
+    historyBtn.addEventListener("click", async () => {
       const participantId = participantInput.value.trim();
-      loadHistoryForParticipant(participantId);
+      showLoadingOverlay("Loading your recent check-ins...");
+      try {
+        await loadHistoryForParticipant(participantId);
+      } finally {
+        hideLoadingOverlay();
+      }
     });
 
-    patternBtn.addEventListener("click", () => {
+    patternBtn.addEventListener("click", async () => {
       const participantId = participantInput.value.trim();
-      loadPatternSummary(participantId);
+      showLoadingOverlay("Summarizing your recent patterns...");
+      try {
+        await loadPatternSummary(participantId);
+      } finally {
+        hideLoadingOverlay();
+      }
     });
   </script>
 </body>
