@@ -839,6 +839,7 @@ def log_interaction(
     text: str,
     reply: str,
     used_memory: bool,
+    final_reply_length: Optional[int] = None
 ) -> None:
     """
     Append one check-in to the participant's JSON log.
@@ -854,6 +855,7 @@ def log_interaction(
         "text": text,
         "reply": reply,
         "used_memory": used_memory,
+        "reply_length": final_reply_length
     }
     append_checkin_to_json(user_id, entry)
 
@@ -912,7 +914,7 @@ async def checkin(payload: CheckinRequest):
     user_history[user_id] = history
 
     # Log to CSV/JSON for evaluation
-    log_interaction(user_id, stress, mode, coping_mode, text, final_reply, used_memory)
+    log_interaction(user_id, stress, mode, coping_mode, text, final_reply, used_memory, final_reply_length=len(final_reply))
 
     return CheckinResponse(
         reply=final_reply,
