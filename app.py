@@ -416,6 +416,46 @@ def simple_fallback_reply(user_text: str, stress: int) -> str:
     messages don't get overwritten by a "demanding day" style reply.
     """
 
+    lower = user_text.strip().lower()
+    help_patterns = [
+        "how to feel better",
+        "how can i feel better",
+        "how do i feel better",
+        "any suggestions",
+        "any advice",
+        "what should i do",
+        "what can i do",
+        "how can i handle this",
+        "suggest some ideas",
+        "suggest some idea",
+        "help me feel better",
+        "ways to feel better",
+        "ideas to feel good",
+        "how to handle this",
+    ]
+    asking_for_help = any(p in lower for p in help_patterns)
+
+    if asking_for_help:
+        # When the user explicitly asks for suggestions, keep the same tone
+        # but add 2–3 small, non-clinical options.
+        if stress <= 3:
+            return (
+                "Thanks for checking in. From what you've shared, it sounds like things may be at least "
+                "somewhat manageable right now, even if there are still ups and downs. Since you're looking "
+                "for ways to feel a bit better, you could consider taking a brief pause for a few slow breaths, "
+                "jotting down one thing that went even a little bit well today, or planning a small, enjoyable "
+                "activity for later like a short walk or listening to music you like."
+            )
+        else:
+            return (
+                "Thanks for taking a moment to check in. It sounds like there is a fair amount on your plate "
+                "right now, and wanting ideas to feel better is completely understandable. You might consider "
+                "taking a short pause to step away from your tasks, focusing on three slow, grounding breaths, "
+                "or checking in briefly with a trusted colleague or friend about how the day went. Even planning "
+                "one simple, low-effort recovery activity for later—like a quiet moment with a drink you enjoy or "
+                "a few minutes of stretching—can be a small step toward easing some of the strain."
+            )
+
     if stress <= 3:
         return (
             "Thanks for checking in. From what you've shared, it sounds like things may be at least "
@@ -429,9 +469,7 @@ def simple_fallback_reply(user_text: str, stress: int) -> str:
         "Thanks for taking a moment to check in. It sounds like there is a fair amount on your plate "
         "right now. You don't have to solve everything in this moment — even briefly noticing how "
         "you're feeling can be a small step toward deciding what support you might need next."
-    )
-
-
+        )
 def maybe_suppress_history_for_prompt(user_text: str, stress: int, history_summary: str) -> str:
     lower = user_text.strip().lower()
     words = lower.split()
@@ -674,19 +712,21 @@ Recent check-ins (summary, newest last):
 
 Your task:
 
-1. First, use the message together with the stress rating to infer the overall tone and
-   burnout-related signals in plain language. Internally, you may think in terms similar to
-   the Maslach burnout components (emotional exhaustion, depersonalization or feeling
-   disconnected from patients, and reduced sense of accomplishment), but you must NOT name
-   these components explicitly to the user and you must NOT diagnose anything.
+1. First, use the message together with the stress rating to infer the overall emotional tone
+   and how heavy the day feels in plain language. Internally, you can think about whether
+   the user sounds:
+   - mostly steady or okay,
+   - mixed (tired or pressured but still coping),
+   - or heavily strained and worn down.
+   You must NOT diagnose anything.
 
 2. Decide which of these broad categories the current check-in fits best:
    - Clearly or mostly positive / stable (for example, the user describes things as going
-     fine, manageable, or even good, and stress is low or moderate).
+     fine, manageable, or good, and stress is low or moderate).
    - Mixed or mildly strained (some stress or frustration, but also some positives or
      coping, and the user does not sound overwhelmed).
-   - High strain / possible burnout signals (for example, strong fatigue, cynicism,
-     feeling emotionally drained, or feeling ineffective, especially when stress is high).
+   - High strain (for example, strong fatigue, feeling drained, or feeling ineffective,
+     especially when stress is high).
 
    Additional rule for detecting MIXED tone:
    - Treat the message as MIXED if it contains both:
@@ -717,7 +757,7 @@ Your task:
        * Avoid offering deep-dive reflection unless the user clearly asks for it.
        * In effect, reflect back the tiring part, reinforce the coping part, and gently
          highlight that it’s okay to hold both at once.
-   - If the message suggests high strain or burnout-like feelings:
+   - If the message suggests high strain:
        * Validate that things sound demanding or draining.
        * Use a calm, compassionate tone without clinical labels.
        * Offer 3–5 sentences, including at most 1–2 gentle questions that invite the
@@ -739,16 +779,34 @@ Your task:
      might be…") rather than strong instructions.
    - Do NOT suggest medication, diagnosis, treatment, or anything that sounds like clinical care.
 
-5. Throughout, avoid clinical or diagnostic language, do not promise outcomes, and do not
+5. Make Quick / Normal / Deep clearly different in how you answer:
+   - For Quick:
+       * Write 2–3 short sentences.
+       * Do NOT ask follow-up questions unless the message is extremely short or vague.
+   - For Normal:
+       * Write 3–4 sentences total.
+       * You may ask at most ONE gentle question.
+   - For Deep:
+       * Write 4–5 sentences total.
+       * You may include 1–2 reflective questions if they feel natural.
+
+6. Reduce repetition and help the user know what to say:
+   - In your reply, paraphrase at least ONE concrete detail from the user’s latest message
+     so they can recognize that you really heard them (for example, mention their shift,
+     feeling "off", feeling drained, or something they said they were unsure about).
+   - If you invite the user to share more, include 2–3 example options of what they could
+     talk about (for example: "what felt most stressful", "what went even a little bit well",
+     or "what you’re most worried about next"), phrased briefly and clearly.
+
+7. Throughout, avoid clinical or diagnostic language, do not promise outcomes, and do not
    give crisis instructions. Stay focused on reflection, noticing patterns, and small,
    realistic steps.
 
-6. You may gently connect to patterns from recent check-ins if it feels natural, but do
+8. You may gently connect to patterns from recent check-ins if it feels natural, but do
    not overload the answer with history.
 
-Return ONLY the reply text, with no labels, headings, or extra formatting.
-"""
-
+    Return ONLY the reply text, with no labels, headings, or extra formatting.
+    """
 
         resp = gemini_model.generate_content(prompt)
         reply = (resp.text or "").strip()
@@ -760,6 +818,7 @@ Return ONLY the reply text, with no labels, headings, or extra formatting.
         print("Gemini error in llm_generate_reply_for_checkin:", e)
         # Fallback to simple neutral reply if LLM fails
         return simple_fallback_reply(user_text, stress)
+
 
 # ================== HISTORY & PATTERN HELPERS ==================
 
