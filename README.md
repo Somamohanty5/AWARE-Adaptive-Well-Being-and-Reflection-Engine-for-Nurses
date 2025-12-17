@@ -110,3 +110,147 @@ aware_app/
       checkins.json
   requirements.txt
   README.md
+```
+# Getting Started
+1. Prerequisites
+
+Python 3.9+
+
+A Google Gemini API key (for gemini-flash-latest)
+
+pip and virtualenv (or conda)
+
+2. Clone and set up environment
+git clone <your-repo-url>.git
+cd aware_app
+
+(Optional but recommended) create a virtual environment
+python -m venv venv
+source venv/bin/activate      # On Windows: venv\Scripts\activate
+
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+3. Set environment variables
+
+At minimum:
+
+export GEMINI_API_KEY="your_api_key_here"
+
+Optional: customize demo login credentials
+export AWARE_DEMO_USER="nurse"
+export AWARE_DEMO_PASS="password"
+
+
+On Windows PowerShell:
+
+$env:GEMINI_API_KEY="your_api_key_here"
+$env:AWARE_DEMO_USER="nurse"
+$env:AWARE_DEMO_PASS="password"
+
+4. Run the app
+uvicorn app:app --reload
+
+
+Open your browser and go to:
+
+http://127.0.0.1:8000
+
+
+Log in using the demo credentials you set (default: nurse / password), then go to the main app page and start a check-in.
+
+# Using AWARE (Walkthrough)
+
+Log in as “nurse”
+Use the login page (/login) with the configured username/password.
+
+Go to the main app (/app)
+
+Enter a Participant ID (e.g., P001).
+
+Choose a stress rating from 1 (very low) to 5 (very high).
+
+Pick a mode:
+
+Quick: short, 2–3 sentence reflection, no follow-up questions.
+
+Normal: 3–4 sentences and at most one gentle question.
+
+Deep: 4–5 sentences, up to two reflective questions.
+
+Type a short free-text reflection and submit.
+
+Read the generated reflection
+
+AWARE responds with a concise, empathetic message.
+
+If you explicitly ask for help (“Any suggestions?”, “What should I do?”), it adds 1–2 small, non-clinical ideas (e.g., taking a break, reflecting on one thing that went okay).
+
+Review recent check-ins
+
+The side panel shows your latest entries and responses for that Participant ID.
+
+Pattern summary (for study/evaluation)
+
+A separate endpoint (/api/pattern_summary/{user_id}) can be used to pull a brief description of patterns over time (used in the user study).
+
+# Safety & Scope
+
+AWARE is intentionally limited:
+
+Not a diagnostic tool
+It does not detect or treat mental health conditions.
+
+No crisis handling
+It does not provide crisis instructions or emergency advice.
+
+Reflection only
+It is designed as a reflection aid and a research prototype for adaptive IUIs, not a clinical product.
+
+These constraints are explicitly encoded in the LLM prompts.
+
+# How This Was Evaluated (Research Context)
+
+This app was evaluated in a small within-subject study with 13 participants over two days:
+
+Pre-task survey (background, prior chatbot use, well-being proxies)
+
+Interaction with AWARE in Normal / Deep modes
+
+Pattern summary view for their Participant ID
+
+Post-task survey with:
+
+5-point Likert ratings for empathy, clarity, usefulness, personalization, trust, continuity
+
+Open-ended feedback on tone and adaptivity
+
+Log-level metrics:
+
+stress, mode, coping style labels, reply length
+
+used to verify that Quick / Normal / Deep behave differently in practice
+
+The codebase you see here supports that study: all interactions are logged to JSON for later analysis.
+
+# Limitations & Next Steps
+
+Some known limitations:
+
+Short, two-day study with a small sample (N=13)
+
+Participants simulated nurse scenarios; not deployed in real clinical workflow
+
+Tone and coping detection are still imperfect (simple rules + LLM)
+
+Future directions we’d like to explore:
+
+Larger, longitudinal deployments with real nurses
+
+Direct comparisons against a generic LLM baseline
+
+More personalization (tone preferences, coping style over time)
+
+A mobile / in-clinic version with micro check-ins and notifications
