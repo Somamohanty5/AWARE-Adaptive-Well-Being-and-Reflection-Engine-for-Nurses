@@ -222,12 +222,10 @@
     initTheme();
 
 
-    // Store last check-in so we can reuse it for deeper reflection
+   
     let lastCheckinContext = null;
 
-    // Pre-fill Participant ID from localStorage if available
-    //participantInput.value = getStoredUserId();
-    // Track which participant the chat currently represents
+
     let currentParticipantId = participantInput.value.trim() || "";
 
     // Reset chat bubbles when participant changes
@@ -324,7 +322,7 @@
               body: JSON.stringify({
                 user_id: participantId,
                 stress: stress,
-                mode: "Deep",   // deeper follow-up
+                mode: "Deep",   
                 text: text,
               }),
             });
@@ -446,7 +444,7 @@
         return;
       }
 
-      // Save participant ID locally so they don't have to re-type it
+      
       setStoredUserId(participantId);
 
       // Store context for potential deeper reflection

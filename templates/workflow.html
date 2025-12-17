@@ -111,9 +111,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
     <script>
 
-        /* -----------------------------
-           NODES in Top–Down Order
-        ------------------------------*/
+
         const nodes = [
             { id: "start", label: "Start", y: 60 },
             { id: "login", label: "Login / Create Account", y: 160 },
@@ -128,12 +126,10 @@
             { id: "end", label: "Closeout", y: 1060 }
         ];
 
-        /* Horizontal position (centered) */
+     
         nodes.forEach(n => n.x = 400);
 
-        /* -----------------------------
-           LINKS (vertical downward edges)
-        ------------------------------*/
+      
         const links = [
             { source: "start", target: "login", label: "User opens AWARE" },
             { source: "login", target: "welcome", label: "Authenticated" },

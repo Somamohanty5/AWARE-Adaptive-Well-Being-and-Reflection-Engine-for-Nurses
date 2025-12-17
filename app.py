@@ -15,7 +15,7 @@ from fastapi import HTTPException
 
 from pydantic import BaseModel, Field, validator
 
-# ===== Google Gemini LLM client (env-based init) =====
+
 import google.generativeai as genai
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -85,7 +85,7 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
 DATA_DIR = BASE_DIR / "data"  # root for JSON logs
 
-# Mount static folder (for CSS/JS)
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -95,7 +95,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 # ================== IN-MEMORY STATE ==================
 
-# Simple in-memory history per user_id (for relational memory during current run)
+# Simple in-memory history per user_id 
 user_history: Dict[str, List[dict]] = {}
 # Map (nurse_login, participant_id) -> session_id for this server run
 session_tokens: Dict[tuple[str, str], str] = {}
@@ -214,10 +214,7 @@ def append_checkin_to_json(user_id: str, entry: dict) -> None:
 # ================== CORE LOGIC (RULE-BASED) ==================
 
 def classify_coping_mode(text: str) -> str:
-    """
-    Very simple rule-based coping style classifier.
-    This is our 'user modeling' for coping style.
-    """
+
     t = text.lower()
 
     problem_words = ["fix", "plan", "schedule", "manage", "organize",
@@ -299,7 +296,7 @@ def generate_feedback(stress: int,
         ]
     lines.append(random.choice(openings))
 
-    # Coping-mode-specific reflection (user modeling → feedback)
+    # Coping-mode-specific reflection (user modeling - feedback)
     if coping_mode == "problem-focused":
         lines.append(
             "You seem to be thinking in terms of plans and actions, which can be helpful as long as you’re not putting all the pressure on yourself."
@@ -525,7 +522,7 @@ def maybe_gemini_refine_reply(user_text: str,
         answer_mode= "focus on reflection and support without giving advice"
         max_sentences= "3-5"
 
-    # 1) Short / vague messages → deterministic clarification, no LLM
+    # 1) Short / vague messages - deterministic clarification, no LLM
     short_or_vague = len(user_text.split()) < 3 or user_text.lower().strip() in {
         "ok", "fine", "idk", "i don't know", "i dont know",
         "nothing", "na", "n/a", "good", "not good", "bad"
@@ -607,7 +604,7 @@ Return only the final reply text.
 
 # ================== ROUTES ==================
 
-# Simple demo users (replace with real auth or backend)
+# Simple demo users 
 USERS = {
     os.environ.get("AWARE_DEMO_USER", "nurse"): os.environ.get("AWARE_DEMO_PASS", "password")
 }
@@ -617,7 +614,7 @@ def get_cookie_user(request: Request) -> Optional[str]:
     Treat empty string or things like 'None', 'null', 'undefined' as not logged in.
     """
     user = request.cookies.get("user_id")
-    print("DEBUG user_id cookie =", repr(user))  # you can remove this later
+    print("DEBUG user_id cookie =", repr(user))  
 
     if not user:
         return None
@@ -879,12 +876,7 @@ Your task:
 # ================== HISTORY & PATTERN HELPERS ==================
 
 def load_user_rows_from_csv(user_id: str) -> list:
-    """
-    Compatibility helper so newer code still works.
-
-    Now we simply delegate to the JSON-based loader so that
-    LLM context includes persisted history, not just this run.
-    """
+    
     return load_user_rows_from_json(user_id)
 
 def log_interaction(
@@ -900,7 +892,7 @@ def log_interaction(
     """
     Append one check-in to the participant's JSON log.
 
-    This is the JSON version of the old CSV logger.
+
     """
     entry = {
         "timestamp": datetime.now().isoformat(),
@@ -918,11 +910,7 @@ def log_interaction(
 
 @app.post("/api/checkin", response_model=CheckinResponse)
 async def checkin(payload: CheckinRequest):
-    """
-    Core mixed-initiative, adaptive check-in endpoint.
-    NOW: the main reply is generated entirely by Gemini (LLM),
-    with rule-based code used only for coping-mode tagging and fallback.
-    """
+
     try:
         user_id = payload.user_id
         stress = payload.stress
@@ -935,7 +923,7 @@ async def checkin(payload: CheckinRequest):
     history = user_history.get(user_id, [])
     last_entry = history[-1] if history else None
 
-    # Load CSV/JSON rows so LLM can see brief history context
+
     csv_rows = load_user_rows_from_csv(user_id)
     history_summary = summarize_history_for_llm(csv_rows)
     history_summary = maybe_suppress_history_for_prompt(text, stress, history_summary)
@@ -969,7 +957,7 @@ async def checkin(payload: CheckinRequest):
     history.append(entry)
     user_history[user_id] = history
 
-    # Log to CSV/JSON for evaluation
+    # Log to JSON for evaluation
     log_interaction(user_id, stress, mode, coping_mode, text, final_reply, used_memory, final_reply_length=len(final_reply))
 
     return CheckinResponse(
