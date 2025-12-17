@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>AWARE – Adaptive Well-Being & Reflection Engine</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    .landing-shell {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .landing-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 24px;
+      align-items: center;
+      margin-top: 24px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 900px) {
+      .landing-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #38bdf8;
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+      line-height: 1.2;
+      margin: 0 0 8px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      margin: 0 0 18px;
+      color: #4b5563;
+    }
+
+    body.dark-theme .hero-subtitle {
+      color: #9ca3af;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .hero-footnote {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    body.dark-theme .hero-footnote {
+      color: #9ca3af;
+    }
+
+    .hero-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px 14px 10px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+      font-size: 0.88rem;
+    }
+
+    .hero-card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .hero-card ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      font-size: 0.85rem;
+    }
+
+    .hero-card li {
+      margin-bottom: 3px;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      margin: 0 0 8px;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      margin: 0 0 16px;
+      color: #6b7280;
+    }
+
+    body.dark-theme .section-subtitle {
+      color: #9ca3af;
+    }
+
+    .how-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.9rem;
+    }
+
+    .how-list li {
+      margin-bottom: 8px;
+    }
+
+    .landing-footer {
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: #4b6cff;
+      font-size: 0.8rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="brand"><a href="/" style="text-decoration:none;color:inherit;">AWARE</a></div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="/" class="active">Home</a>
+        <a href="/about">About</a>
+        <a href="/flow">Flow</a>
+      </nav>
+    </div>
+
+    <div class="right">
+      <button id="theme-toggle-btn" class="secondary-btn" type="button">
+        <span id="theme-toggle-icon">🌞</span>
+      </button>
+      {% if user_id %}
+      <div class="user">Signed in as <strong>{{ user_id }}</strong></div>
+      <div class="logout"><a href="/logout">Logout</a></div>
+      {% else %}
+      <a href="/login" style="color:#fff; text-decoration:none;">Login</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="landing-shell">
+    <!-- HERO -->
+    <section class="landing-hero">
+      <div>
+        <div class="hero-kicker">For healthcare workers & study demos</div>
+        <h1 class="hero-title">Short check-ins for long, demanding days.</h1>
+        <p class="hero-subtitle">
+          AWARE is a small reflection companion for nurses and other healthcare workers.
+          In under a minute, you record how you feel and get a brief, gentle prompt in return — not a diagnosis.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/login" class="primary-btn" style="width:auto;">Try a check-in</a>
+          <a href="/about" class="secondary-btn" style="width:auto;">What is AWARE?</a>
+        </div>
+        <div class="hero-footnote">
+          Built as a university research prototype. AWARE is not a crisis service or clinical tool.
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div class="hero-card-title">A single AWARE moment looks like:</div>
+        <ul>
+          <li>Slide your stress level from 1–5.</li>
+          <li>Write one or two sentences about your shift.</li>
+          <li>Get a short, supportive reflection tailored to what you wrote.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section>
+      <h2 class="section-title">How AWARE works</h2>
+      <p class="section-subtitle">
+        Designed to be simple enough for a quick break, but structured enough for research.
+      </p>
+      <ol class="how-list">
+        <li><strong>Check in briefly.</strong> Choose Quick, Normal, or Deep, set stress 1–5, and share a sentence.</li>
+        <li><strong>Get an adaptive reply.</strong> AWARE adjusts tone and length based on your stress and mode,
+          using a constrained language model.</li>
+        <li><strong>See patterns later.</strong> Check-ins are stored under a coded ID so you or researchers can
+          review stress trends over time.</li>
+      </ol>
+    </section>
+
+    <footer class="landing-footer">
+      <span>AWARE – Adaptive Well-Being & Reflection Engine (prototype).</span>
+      <div class="footer-links">
+        <a href="/about">About AWARE</a>
+        <a href="/flow">IUI workflow</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Theme toggle (same pattern as other pages)
+    const themeToggleBtn = document.getElementById("theme-toggle-btn");
+    const themeToggleIcon = document.getElementById("theme-toggle-icon");
+    const THEME_KEY = "aware_theme";
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.classList.add("dark-theme");
+        if (themeToggleIcon) themeToggleIcon.textContent = "🌙";
+      } else {
+        document.body.classList.remove("dark-theme");
+        if (themeToggleIcon) themeToggleIcon.textContent = "🌞";
+      }
+      localStorage.setItem(THEME_KEY, theme);
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      const theme = saved === "dark" ? "dark" : "light";
+      applyTheme(theme);
+    }
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("dark-theme");
+        applyTheme(isDark ? "light" : "dark");
+      });
+    }
+    initTheme();
+  </script>
+</body>
+
+</html>

@@ -210,9 +210,14 @@
             <button id="theme-toggle-btn" class="secondary-btn" type="button">
                 <span id="theme-toggle-icon">🌞</span>
             </button>
+            {% if user_id %}
             <div class="user">Signed in as <strong>{{ user_id }}</strong></div>
             <div class="logout"><a href="/logout">Logout</a></div>
+            {% else %}
+            <a href="/login" style="color:#fff; text-decoration:none;">Login</a>
+            {% endif %}
         </div>
+
     </div>
     <header>
         <h1>AWARE</h1>

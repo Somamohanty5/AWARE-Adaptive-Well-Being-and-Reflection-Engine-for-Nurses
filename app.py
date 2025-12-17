@@ -611,11 +611,36 @@ Return only the final reply text.
 USERS = {
     os.environ.get("AWARE_DEMO_USER", "nurse"): os.environ.get("AWARE_DEMO_PASS", "password")
 }
+def get_cookie_user(request: Request) -> Optional[str]:
+    """
+    Return the logged-in username from cookies, or None if not logged in.
+    Treat empty string or things like 'None', 'null', 'undefined' as not logged in.
+    """
+    user = request.cookies.get("user_id")
+    print("DEBUG user_id cookie =", repr(user))  # you can remove this later
 
+    if not user:
+        return None
+
+    # normalize weird values
+    if isinstance(user, str) and user.strip().lower() in {"none", "null", "undefined", '""', "''"}:
+        return None
+
+    return user
+
+@app.get("/landing", response_class=HTMLResponse)
+async def landing(request: Request):
+    user = get_cookie_user(request)
+    return templates.TemplateResponse("landing.html", {"request": request, "user_id": user})
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    user = request.cookies.get("user_id")
+async def landing_root(request: Request):
+    user = get_cookie_user(request)
+    return templates.TemplateResponse("landing.html", {"request": request, "user_id": user})
+
+@app.get("/app", response_class=HTMLResponse)
+async def app_home(request: Request):
+    user = get_cookie_user(request)
     if not user:
         return RedirectResponse("/login")
     return templates.TemplateResponse("index.html", {"request": request, "user_id": user})
@@ -624,17 +649,27 @@ async def index(request: Request):
 # Login / logout routes
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
-    user = request.cookies.get("user_id")
+    user = get_cookie_user(request)
     if user:
-        return RedirectResponse("/")
+        return RedirectResponse("/app")
     return templates.TemplateResponse("login.html", {"request": request})
+
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request):
+    user = get_cookie_user(request)
+    return templates.TemplateResponse("about.html", {"request": request, "user_id": user})
+
+@app.get("/flow", response_class=HTMLResponse)
+async def flow(request: Request):
+    user = get_cookie_user(request)
+    return templates.TemplateResponse("workflow.html", {"request": request, "user_id": user})
 
 
 @app.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
     expected = USERS.get(username)
     if expected and expected == password:
-        resp = RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        resp = RedirectResponse("/app", status_code=status.HTTP_302_FOUND)
         # app-level user account (e.g., 'nurse')
         resp.set_cookie(key="user_id", value=username, httponly=True)
         # session_id groups all check-ins in this browser login session
@@ -659,18 +694,7 @@ async def logout():
     return resp
 
 
-# About page
-@app.get("/about", response_class=HTMLResponse)
-async def about(request: Request):
-    user = request.cookies.get("user_id")
-    return templates.TemplateResponse("about.html", {"request": request, "user_id": user})
 
-
-# Flow / workflow page
-@app.get("/flow", response_class=HTMLResponse)
-async def flow(request: Request):
-    user = request.cookies.get("user_id")
-    return templates.TemplateResponse("workflow.html", {"request": request, "user_id": user})
 
 def llm_generate_reply_for_checkin(
     user_text: str,
